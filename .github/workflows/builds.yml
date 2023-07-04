@@ -6,6 +6,11 @@ on:
     branches:
       - main
 
+# Cancel existing jobs on new pushes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 # All the different build/test jobs.
 jobs:
 
@@ -132,4 +137,3 @@ jobs:
       run: |
         source ${GITHUB_WORKSPACE}/.github/ci_setup.sh ${{ matrix.PLATFORM.NAME }}
         cmake --build build
-
