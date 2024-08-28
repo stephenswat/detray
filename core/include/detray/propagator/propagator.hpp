@@ -115,6 +115,13 @@ struct propagator {
             : _stepping(param, magnetic_field, det),
               _navigation(det, std::move(candidates)) {}
 
+        /// @brief Copy-construct with a new candidate vector
+        DETRAY_HOST_DEVICE state(
+            const state &other,
+            vector_type<intersection_type> &&candidates = {})
+            : _stepping(other._stepping),
+              _navigation(other._navigation, std::move(candidates)) {}
+
         /// Set the particle hypothesis
         DETRAY_HOST_DEVICE
         void set_particle(const pdg_particle<scalar_type> &ptc) {

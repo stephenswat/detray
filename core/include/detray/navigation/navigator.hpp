@@ -191,6 +191,36 @@ class navigator {
                                  vector_type<intersection_type> candidates)
             : m_detector(&det), m_candidates(candidates) {}
 
+        /// @brief Copy-construct with a new candidate vector
+        ///
+        /// @note This copies the candidates serially in $O(n)$ time where $n$
+        /// is the number of candidates.
+        DETRAY_HOST_DEVICE state(const state &other,
+                                 vector_type<intersection_type> &&candidates)
+            : m_heartbeat(other.m_heartbeat),
+              m_detector(other.m_detector),
+              m_candidates(candidates),
+              m_inspector(other.m_inspector),
+              m_status(other.m_status),
+              m_direction(other.m_direction),
+              m_trust_level(other.m_trust_level),
+              m_volume_index(other.m_volume_index) {
+
+            m_candidates.clear();
+
+            for (const auto &candidate : other.candidates()) {
+                m_candidates.push_back(candidate);
+            }
+
+            m_next = m_candidates.begin();
+            m_last = m_candidates.begin();
+
+            std::advance(m_next, std::distance(other.candidates().cbegin(),
+                                               other.next()));
+            std::advance(m_last, std::distance(other.candidates().cbegin(),
+                                               other.last()));
+        }
+
         /// Constructor from candidates vector_view
         template <
             typename view_t,
